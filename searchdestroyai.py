@@ -70,33 +70,112 @@ def generateInitialBelief(z):
 def printBoard(board):
     for row in board:
         for cell in row:
-            print(cell.state)
+            print(cell.target)
 #Print out current board of beliefs
 def printBelief(board):
     for row in board:
         for cell in row:
             print(cell)
 
-def startAgent():
-    tmp = generateBoard(20)
+def startAgent(tmp):
+    #tmp = generateBoard(20)
     belief = generateInitialBelief(tmp) 
-    startLocationX = random.randint(0,len(tmp))
-    startLocationY = random.randint(0,len(tmp))
+    startLocationX = random.randint(0,len(tmp)-1)
+    startLocationY = random.randint(0,len(tmp)-1)
     bob = Agent(startLocationX,startLocationY,belief)
     return bob, tmp
 
 #Iteratively travel to the cell with the highest probability of containing the target, search
 #that cell. Repeat until target is found.
 def basicAI1(board,agent):
-    
     #Travel to Cell with Highest probability of containing target, keep track of distance
-
+    targetx, targety = getCoordH(board,agent)
+    distance = travel(board,agent,targetx,targety)
     #search
-
+    print(searchCell(board,targetx,targety))
+    return(searchCell(board,targetx,targety))
     #Update network
+    print('over')
+
+#Gets the Coordinates of a Cell with highest Probability of containing target
+#If tie, random among
+#Used for Basic Agent 1
+def getCoordH(board,agent):
+    greatestProb = 0
+    counter = 0
+    targetx = None
+    targety = None
+    #Find the greatest current probabiity, and number of Cells that have that probabiliy
+    for row in board:
+        for cell in row:
+            if agent.belief[cell.x][cell.y] > greatestProb:
+                greatestProb = agent.belief[cell.x][cell.y]
+                counter = 1
+                targetx = cell.x
+                targety = cell.y
+            elif agent.belief[cell.x][cell.y] == greatestProb:
+                counter = counter + 1
+    #If Counter is one, return the coordinates, otherwise, return a random coordinate that has the target 
+    if counter == 1:
+        return targetx, targety
+    else:
+        rand = random.randint(1,counter)
+        counter = 0
+        for row in board:
+            for cell in row:
+                if agent.belief[cell.x][cell.y] == greatestProb:
+                    counter = counter + 1
+                    if counter == rand:
+                        targetx = cell.x
+                        targety = cell.y
+                        return targetx,targety
 
 
+#Getts the coordinates of a cell with the highest probability of finding a target
+#Used for Basic Agent 2
+def getCoordF():
+    print('over')
 
+def searchCell(board,targetx,targety):
+    if board[targetx][targety].target == False:
+        return False
+    elif board[targetx][targety].target == True:
+        print('reached')
+        rand = random.randint(1,100)
+        if board[targetx][targety].state == 'flat':
+            if rand < 10:
+                return False
+        elif board[targetx][targety].state == 'hill':
+            if rand < 30:
+                return False
+        elif board[targetx][targety].state == 'forest':
+            if rand < 70:
+                return False
+        elif board[targetx][targety].state == 'cave':
+            if rand < 90:
+                return False
+        return True
+
+    print('over')
+
+
+#agent travels to the targetted cell
+def travel(board,agent,targetx,targety):
+    distance = 0
+    while agent.x != targetx or agent.y != targety:
+        if agent.x < targetx:
+            agent.x = agent.x + 1
+            distance = distance+1
+        elif agent.x > targetx:
+            agent.x = agent.x - 1
+            distance = distance+1
+        elif agent.y > targety:
+            agent.y = agent.y - 1
+            distance = distance+1
+        elif agent.y < targety:
+            agent.y = agent.y + 1
+            distance = distance+1
+    return distance
     print('over')
     
 #Iteratively travel to the cell with the highest probability of finding the target within that
@@ -104,6 +183,5 @@ def basicAI1(board,agent):
 def basicAI2(board,agent):
     belief = generateInitialBelief(board) 
 
-bob, tmp = startAgent()
-basicAI1(tmp, bob)
+
 

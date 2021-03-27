@@ -25,18 +25,35 @@ scale = (720,480)
 screen = pygame.display.set_mode(scale,RESIZABLE)
 pygame.display.set_caption('Search And Destroy!')
 
+
 #Set dimensions for the board and create board 
-dimen = 15
+dimen = 5
+
+WIDTH = int((480-(dimen*MARGIN))/dimen)
+HEIGHT = int((480-(dimen*MARGIN))/dimen)
+
 tmpboard = searchdestroyai.generateBoard(dimen)
+
+
 
 def gamestart():
     #Initialize Stuff
     text0 = font.render("Search and Destroy!",1,RED)
-    text1 = font2.render("Target:",1,BLACK)
-    text2 = font2.render("Basic AI",1,BLACK)
-    text3 = font2.render("Improved AI",1,BLACK)
-    text4 = font2.render("AI Stuff",1,BLACK)
+    #text1 = font2.render("Target:",1,BLACK)
+    text2 = font2.render("Start the AI",1,BLACK)
+    text3 = font2.render("Basic AI 1",1,BLACK)
+    text4 = font2.render("Basic AI 2",1,BLACK)
     text5 = font2.render("Da Ai",1,BLACK)
+
+
+    agentAsset = pygame.image.load('assets/agent.png').convert_alpha()
+    agentAsset = pygame.transform.scale(agentAsset, (WIDTH, HEIGHT))
+
+    aiStart = False
+    result = False
+
+    
+    
 
     #Event Starto
     start = True
@@ -47,16 +64,16 @@ def gamestart():
             #If you want to play without the AI, minesweeper works from clicking!
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse = pygame.mouse.get_pos()
-                activateCell(tmpboard,dimen,mouse)
-                #Run Basic AI
+                #activateCell(tmpboard,dimen,mouse)
+                #STart AI
                 if 525 <= mouse[0] <= 525+140 and 120 <= mouse[1] <= 120+40:
-                    minesweepai.basicAI(tmpboard)
-                    flagMine, rip = checkWin(tmpboard,dimen)
-                #Run Advanced AI
+                    bob, tmp = searchdestroyai.startAgent(tmpboard)
+                    aiStart = True
+                    print('clicked')
+                #Start the AI
                 if 525 <= mouse[0] <= 525+140 and 170 <= mouse[1] <= 170+40:
-                    #minesweepai.improvedAIGlobal(tmpboard,90)
-                    minesweepai.improvedAI(tmpboard)
-                    flagMine, rip = checkWin(tmpboard,dimen)
+                    result = searchdestroyai.basicAI1(tmpboard,bob)
+                    print(result)
                     print('clicked')
                 if 525 <= mouse[0] <= 525+140 and 220 <= mouse[1] <= 220+40:
                     #minesweepai.improvedAIGlobal(tmpboard,90)
@@ -73,6 +90,15 @@ def gamestart():
         #Generate the board on UI based on board generated
         genBoard(tmpboard,dimen)
 
+        #Blit the Agent
+        if aiStart == True:
+            #print(bob.x)
+            screen.blit(agentAsset,[(MARGIN + WIDTH) * bob.x + MARGIN,(MARGIN + HEIGHT) * bob.y + MARGIN,WIDTH,HEIGHT])
+
+        if result == False:
+            text1 = font2.render("Target:Not Found",1,RED)
+        elif result == True:
+            text1 = font2.render("Target:Found!",1,RED)
         #Draw Buttons
         pygame.draw.rect(screen,(170,170,170),[525,70,140,40])
         pygame.draw.rect(screen,(170,170,170),[525,120,140,40])
@@ -90,6 +116,9 @@ def gamestart():
         screen.blit(text4, (530,230))
         screen.blit(text5, (530,280))
         #screen.blit(text6, (530,330))
+
+
+
 
         #Leaving if for coordinates of possible future buttons
         '''
@@ -113,7 +142,7 @@ def gamestart():
 #Generate the initial maze based on board generated
 #Draws everything onto Pygames
 def genBoard(board,x):
-    print(x)
+    #print(x)
     WIDTH = int((480-(x*MARGIN))/x)
     HEIGHT = int((480-(x*MARGIN))/x)
     #Get all the assets
