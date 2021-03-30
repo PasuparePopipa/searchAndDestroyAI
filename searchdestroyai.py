@@ -118,6 +118,28 @@ def basicAI1(board,agent):
         printBelief(agent.belief)
         return False
 
+#Iteratively travel to the cell with the highest probability of finding the target within that
+#cell, search that cell. Repeat until the target is found.
+#So Basic AI1 rate * the rate of finding it
+def basicAI2(board,agent):
+    #Travel to Cell with Highest probability of containing target, keep track of distance
+    targetx, targety = getCoordF(board,agent)
+    distance = travel(board,agent,targetx,targety)
+    #search the Cell
+    search = searchCell(board,targetx,targety)
+    #If found, it's all over
+    if search == True:
+        #print('over')
+        return True
+    #If not found, update the network and return false
+    elif search == False:
+        #Update network
+        #print('test')
+        updateNetwork(agent,board,targetx,targety)
+        printBelief(agent.belief)
+        return False
+
+
 #Updates the Network of the agent,
 #Change the beliefs based on the last false
 def updateNetwork(agent,board,targetx,targety):
@@ -174,8 +196,35 @@ def getCoordH(board,agent):
 
 #Getts the coordinates of a cell with the highest probability of finding a target
 #Used for Basic Agent 2
-def getCoordF():
-    print('over')
+def getCoordF(board,agent):
+    greatestProb = 0
+    counter = 0
+    targetx = None
+    targety = None
+    #Find the greatest current probabiity, and number of Cells that have that probabiliy
+    for row in board:
+        for cell in row:
+            if agent.belief[cell.x][cell.y] * getRates(cell.state)> greatestProb:
+                greatestProb = agent.belief[cell.x][cell.y]
+                counter = 1
+                targetx = cell.x
+                targety = cell.y
+            elif agent.belief[cell.x][cell.y] * getRates(cell.state)== greatestProb:
+                counter = counter + 1
+    #If Counter is one, return the coordinates, otherwise, return a random coordinate that has the target 
+    if counter == 1:
+        return targetx, targety
+    else:
+        rand = random.randint(1,counter)
+        counter = 0
+        for row in board:
+            for cell in row:
+                if agent.belief[cell.x][cell.y] * getRates(cell.state) == greatestProb:
+                    counter = counter + 1
+                    if counter == rand:
+                        targetx = cell.x
+                        targety = cell.y
+                        return targetx,targety
 
 #Searches the Cell based on a given x and y coordinate, 
 #Return true if found, false if not found
@@ -217,10 +266,6 @@ def travel(board,agent,targetx,targety):
     return distance
     print('over')
     
-#Iteratively travel to the cell with the highest probability of finding the target within that
-#cell, search that cell. Repeat until the target is found.
-def basicAI2(board,agent):
-    belief = generateInitialBelief(board) 
 
 '''
 
