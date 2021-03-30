@@ -14,6 +14,7 @@ class Cell:
         self.y = y
         self.state = z
         self.target = False
+
 #Our agent, x and y tell us the agent's current position
 #believe is our 2D array of probabilities
 class Agent:
@@ -66,6 +67,17 @@ def generateInitialBelief(z):
     #total Cells
     return board
 
+#Gets the rate of failure given a current state
+def getRates(state):
+    if state == 'flat':
+        return 0.1
+    elif state == 'hill':
+        return 0.3
+    elif state == 'forest':
+        return 0.7
+    elif state == 'cave':
+        return 0.9
+
 #Print out current board based on state
 def printBoard(board):
     for row in board:
@@ -77,6 +89,7 @@ def printBelief(board):
         for cell in row:
             print(cell)
 
+#Starts up the AI, Partially for UI Purposes
 def startAgent(tmp):
     #tmp = generateBoard(20)
     belief = generateInitialBelief(tmp) 
@@ -91,11 +104,39 @@ def basicAI1(board,agent):
     #Travel to Cell with Highest probability of containing target, keep track of distance
     targetx, targety = getCoordH(board,agent)
     distance = travel(board,agent,targetx,targety)
-    #search
-    print(searchCell(board,targetx,targety))
-    return(searchCell(board,targetx,targety))
-    #Update network
-    print('over')
+    #search the Cell
+    search = searchCell(board,targetx,targety)
+    #If found, it's all over
+    if search == True:
+        #print('over')
+        return True
+    #If not found, update the network and return false
+    elif search == False:
+        #Update network
+        #print('test')
+        updateNetwork(agent,board,targetx,targety)
+        printBelief(agent.belief)
+        return False
+
+#Updates the Network of the agent,
+#Change the beliefs based on the last false
+def updateNetwork(agent,board,targetx,targety):
+    d = len(agent.belief)
+    agent2 = deepcopy(agent)
+    for i in range(d):
+        for j in range(d):
+            #Prob(target in Cell given obs + fail)
+            #Bayes Therom, A is target is in current Cell, B is failure another Cell?
+            #Bayes P(A|B) = P(A)P(B|A)/P(B)
+            #(1-getRates(board[targetx][targety])) 
+            if i == targetx and j == targety:
+                newBelief = agent2.belief[i][j] * (1-getRates(board[targetx][targety].state))  / (1-agent2.belief[targetx][targety])
+                agent.belief[i][j] = newBelief
+            else:
+                newBelief = agent2.belief[i][j] * 1 / (1-agent2.belief[targetx][targety])
+                agent.belief[i][j] = newBelief
+            #print('update')
+
 
 #Gets the Coordinates of a Cell with highest Probability of containing target
 #If tie, random among
@@ -136,11 +177,12 @@ def getCoordH(board,agent):
 def getCoordF():
     print('over')
 
+#Searches the Cell based on a given x and y coordinate, 
+#Return true if found, false if not found
 def searchCell(board,targetx,targety):
     if board[targetx][targety].target == False:
         return False
     elif board[targetx][targety].target == True:
-        print('reached')
         rand = random.randint(1,100)
         if board[targetx][targety].state == 'flat':
             if rand < 10:
@@ -155,9 +197,6 @@ def searchCell(board,targetx,targety):
             if rand < 90:
                 return False
         return True
-
-    print('over')
-
 
 #agent travels to the targetted cell
 def travel(board,agent,targetx,targety):
@@ -183,5 +222,13 @@ def travel(board,agent,targetx,targety):
 def basicAI2(board,agent):
     belief = generateInitialBelief(board) 
 
+'''
+
+tmp = generateBoard(5)
+bob, tmp2 = startAgent(tmp)
+printBelief(bob.belief)
 
 
+updateNetwork(bob,tmp,1,1)
+printBelief(bob.belief)
+'''

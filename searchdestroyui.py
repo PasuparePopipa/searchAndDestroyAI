@@ -70,7 +70,7 @@ def gamestart():
                     bob, tmp = searchdestroyai.startAgent(tmpboard)
                     aiStart = True
                     print('clicked')
-                #Start the AI
+                #Run Basic AI
                 if 525 <= mouse[0] <= 525+140 and 170 <= mouse[1] <= 170+40:
                     result = searchdestroyai.basicAI1(tmpboard,bob)
                     print(result)
