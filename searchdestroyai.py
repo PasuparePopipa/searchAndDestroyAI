@@ -148,14 +148,27 @@ def updateNetwork(agent,board,targetx,targety):
     for i in range(d):
         for j in range(d):
             #Prob(target in Cell given obs + fail)
-            #Bayes Therom, A is target is in current Cell, B is failure another Cell?
+            #P(A) = In Current Cell
+            #P(B) = Failed in Specific Cell
             #Bayes P(A|B) = P(A)P(B|A)/P(B)
+            # 
+            #P(B) = P(A)P(B/A) + P(notA)P(B/notA)
+
+
+            #Bayes Therom, A is target is in current Cell, B is failure in searched Cell?
+            #Bayes P(A|B) = P(A)P(B|A)/P(B)
+            #P(B) = P(A)P(B/A) + P(notA)P(B/notA)
+            #P(B) = 
             #(1-getRates(board[targetx][targety])) 
-            if i == targetx and j == targety:
-                newBelief = agent2.belief[i][j] * (1-getRates(board[targetx][targety].state))  / (1-agent2.belief[targetx][targety])
+            if i == targetx and j == targety: #If we are in the Cell that we searched
+                #P(B) changes to failure in this Cell
+                pb = agent2.belief[i][j] * (getRates(board[targetx][targety].state)) + (1-agent2.belief[i][j]) * 1
+                newBelief = agent2.belief[i][j] * getRates(board[targetx][targety].state)  / pb
                 agent.belief[i][j] = newBelief
-            else:
-                newBelief = agent2.belief[i][j] * 1 / (1-agent2.belief[targetx][targety])
+            else: #Belief State of other cells
+                pb = agent2.belief[i][j] * (getRates(board[targetx][targety].state)) + (1-agent2.belief[i][j]) * 1
+                newBelief = agent2.belief[i][j] * 1 / pb
+                #print(agent.belief[i][j])
                 agent.belief[i][j] = newBelief
             #print('update')
 

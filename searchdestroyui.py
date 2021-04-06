@@ -16,6 +16,8 @@ pygame.init()
 
 font = pygame.font.SysFont("Arial",30)
 font2 = pygame.font.SysFont("Arial",20)
+font3 = pygame.font.SysFont("Arial",15)
+
 FPS = 30
 fpsClock = pygame.time.Clock()
 
@@ -27,7 +29,7 @@ pygame.display.set_caption('Search And Destroy!')
 
 
 #Set dimensions for the board and create board 
-dimen = 5
+dimen = 6
 
 WIDTH = int((480-(dimen*MARGIN))/dimen)
 HEIGHT = int((480-(dimen*MARGIN))/dimen)
@@ -43,7 +45,9 @@ def gamestart():
     text2 = font2.render("Start the AI",1,BLACK)
     text3 = font2.render("Basic AI 1",1,BLACK)
     text4 = font2.render("Basic AI 2",1,BLACK)
-    text5 = font2.render("Da Ai",1,BLACK)
+    text5 = font2.render("Improved AI",1,BLACK)
+    text6 = font2.render("Improved AI:",1,BLACK)
+    text7 = font2.render("Moving Target",1,BLACK)
 
 
     agentAsset = pygame.image.load('assets/agent.png').convert_alpha()
@@ -114,7 +118,8 @@ def gamestart():
         screen.blit(text3, (530,180))
         screen.blit(text4, (530,230))
         screen.blit(text5, (530,280))
-        #screen.blit(text6, (530,330))
+        screen.blit(text6, (530,317))
+        screen.blit(text7, (530,335))
 
 
 
