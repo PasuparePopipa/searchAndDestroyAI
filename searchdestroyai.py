@@ -109,14 +109,14 @@ def basicAI1(board,agent):
     #If found, it's all over
     if search == True:
         #print('over')
-        return True
+        return True, distance
     #If not found, update the network and return false
     elif search == False:
         #Update network
         #print('test')
         updateNetwork(agent,board,targetx,targety)
-        printBelief(agent.belief)
-        return False
+        #printBelief(agent.belief)
+        return False, distance
 
 #Iteratively travel to the cell with the highest probability of finding the target within that
 #cell, search that cell. Repeat until the target is found.
@@ -130,14 +130,14 @@ def basicAI2(board,agent):
     #If found, it's all over
     if search == True:
         #print('over')
-        return True
+        return True, distance
     #If not found, update the network and return false
     elif search == False:
         #Update network
         #print('test')
         updateNetwork(agent,board,targetx,targety)
-        printBelief(agent.belief)
-        return False
+        #printBelief(agent.belief)
+        return False, distance
 
 
 #Updates the Network of the agent,
@@ -169,6 +169,7 @@ def updateNetwork(agent,board,targetx,targety):
                 pb = agent2.belief[i][j] * (getRates(board[targetx][targety].state)) + (1-agent2.belief[i][j]) * 1
                 newBelief = agent2.belief[i][j] * 1 / pb
                 #print(agent.belief[i][j])
+
                 agent.belief[i][j] = newBelief
             #print('update')
 
@@ -191,20 +192,24 @@ def getCoordH(board,agent):
                 targety = cell.y
             elif agent.belief[cell.x][cell.y] == greatestProb:
                 counter = counter + 1
-    #If Counter is one, return the coordinates, otherwise, return a random coordinate that has the target 
+    #If Counter is one, return the coordinates, otherwise, coordinates with shortest distance
     if counter == 1:
         return targetx, targety
     else:
-        rand = random.randint(1,counter)
+        shortDist = 999999
         counter = 0
         for row in board:
             for cell in row:
                 if agent.belief[cell.x][cell.y] == greatestProb:
-                    counter = counter + 1
-                    if counter == rand:
-                        targetx = cell.x
-                        targety = cell.y
-                        return targetx,targety
+                    if abs(cell.x - agent.x) + abs(cell.y-agent.y) < shortDist:
+                        shortDist = abs(cell.x - agent.x) + abs(cell.y-agent.y) 
+        for row in board:
+            for cell in row:
+                if agent.belief[cell.x][cell.y] == greatestProb and abs(cell.x - agent.x) + abs(cell.y-agent.y) == shortDist:
+                    targetx = cell.x
+                    targety = cell.y
+                    return targetx,targety
+    print('reached')
 
 
 #Getts the coordinates of a cell with the highest probability of finding a target
@@ -217,27 +222,31 @@ def getCoordF(board,agent):
     #Find the greatest current probabiity, and number of Cells that have that probabiliy
     for row in board:
         for cell in row:
-            if agent.belief[cell.x][cell.y] * getRates(cell.state)> greatestProb:
+            if agent.belief[cell.x][cell.y] * (1-getRates(cell.state)) > greatestProb:
                 greatestProb = agent.belief[cell.x][cell.y]
                 counter = 1
                 targetx = cell.x
                 targety = cell.y
-            elif agent.belief[cell.x][cell.y] * getRates(cell.state)== greatestProb:
+            elif agent.belief[cell.x][cell.y] * (1-getRates(cell.state))== greatestProb:
                 counter = counter + 1
-    #If Counter is one, return the coordinates, otherwise, return a random coordinate that has the target 
+    #If Counter is one, return the coordinates, otherwise, return a coordinate with shortest distance
     if counter == 1:
         return targetx, targety
     else:
-        rand = random.randint(1,counter)
+        shortDist = 999999
         counter = 0
         for row in board:
             for cell in row:
-                if agent.belief[cell.x][cell.y] * getRates(cell.state) == greatestProb:
-                    counter = counter + 1
-                    if counter == rand:
-                        targetx = cell.x
-                        targety = cell.y
-                        return targetx,targety
+                if agent.belief[cell.x][cell.y]  * (1-getRates(cell.state)) == greatestProb:
+                    if abs(cell.x - agent.x) + abs(cell.y-agent.y) < shortDist:
+                        shortDist = abs(cell.x - agent.x) + abs(cell.y-agent.y) 
+        for row in board:
+            for cell in row:
+                if agent.belief[cell.x][cell.y]  * (1-getRates(cell.state)) == greatestProb and abs(cell.x - agent.x) + abs(cell.y-agent.y) == shortDist:
+                    targetx = cell.x
+                    targety = cell.y
+                    return targetx,targety
+    print('reached')
 
 #Searches the Cell based on a given x and y coordinate, 
 #Return true if found, false if not found
@@ -279,6 +288,43 @@ def travel(board,agent,targetx,targety):
     return distance
     print('over')
     
+def getData(x):
+    for i in range(x):
+        searches = 0
+        totalDistance = 0
+        tmp = generateBoard(50)
+        bob, tmp = startAgent(tmp)
+        res = False
+        while res == False:
+            res, dist = basicAI1(tmp,bob)
+            totalDistance = totalDistance + dist
+            searches = searches + 1
+        print(totalDistance)
+        print(searches)
+
+
+def getData2(x):
+    for i in range(x):
+        searches = 0
+        totalDistance = 0
+        tmp = generateBoard(50)
+        bob, tmp = startAgent(tmp)
+        res = False
+        while res == False:
+            res, dist = basicAI2(tmp,bob)
+            totalDistance = totalDistance + dist
+            searches = searches + 1
+        print(totalDistance)
+        print(searches)
+
+
+
+
+getData(1)
+print('sep')
+getData2(1)
+
+
 
 '''
 

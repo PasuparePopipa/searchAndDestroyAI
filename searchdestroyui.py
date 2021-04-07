@@ -29,7 +29,7 @@ pygame.display.set_caption('Search And Destroy!')
 
 
 #Set dimensions for the board and create board 
-dimen = 6
+dimen = 5
 
 WIDTH = int((480-(dimen*MARGIN))/dimen)
 HEIGHT = int((480-(dimen*MARGIN))/dimen)
