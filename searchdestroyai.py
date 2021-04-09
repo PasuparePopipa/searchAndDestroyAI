@@ -1,6 +1,6 @@
 import random
 import math
-import numpy
+import numpy as np
 from copy import copy, deepcopy
 from itertools import combinations
 
@@ -139,6 +139,116 @@ def basicAI2(board,agent):
         #printBelief(agent.belief)
         return False, distance
 
+#The Agent Kai, 
+#2 Things seperate improved agent from the Basics
+#One is a simulated annealing like approach that lets the Agent make "mistakes", to alleviate the weakness of basic AI2
+#Additional Heuristic, If at a good Cell, Search
+def improvedAgent(board,agent):
+    #Simulated Annealing Rate
+    simAnn = 15
+    rand = random.randint(0,100)
+    if rand > simAnn:
+        #Basic Agent 2 Rules
+        targetx, targety = getCoordF(board,agent)
+    elif rand <= simAnn:
+        #Basic Agent 1 Rules
+        targetx, targety = getCoordH(board,agent)
+    
+    #Travel towards target and search
+    #If rate of finding cell is good, search the cell
+    distance, searches , boole = improvedtravel(board,agent,targetx,targety)
+    
+    #If target found prematurely from heuristic, yay
+    if boole == True:
+        return True, distance, searches
+    #search the Cell
+    searches = searches + 1
+    search = searchCell(board,targetx,targety)
+    #If found, it's all over
+    if search == True:
+        #print('over')
+        #print(searches)
+        return True, distance, searches
+    #If not found, update the network and return false
+    elif search == False:
+        #Update network
+        #print('test')
+        updateNetwork(agent,board,targetx,targety)
+        #printBelief(agent.belief)
+        return False, distance, searches
+
+
+#agent travels to the targetted cell
+#If Cell hits a certain heuristic, search
+def improvedtravel(board,agent,targetx,targety):
+    searches = 0
+    #Set the heuristic for searching for Cells along the way
+    heuris = improvedHeuristic(board,agent)
+    distance = 0
+    #Traveling to target
+    while agent.x != targetx or agent.y != targety:
+        if agent.x < targetx:
+            agent.x = agent.x + 1
+            distance = distance+1
+            #If Chances of finding the cell is greater than heuristic, Search the cell
+            if agent.belief[agent.x][agent.y] * (1-getRates(board[agent.x][agent.y].state)) > heuris:
+                searches = searches + 1
+                search = searchCell(board,agent.x,agent.y)
+                if search == True:
+                    return distance, searches, True
+                elif search == False:
+                    updateNetwork(agent,board,targetx,targety)
+                    #printBelief(agent.belief)
+        elif agent.x > targetx:
+            agent.x = agent.x - 1
+            distance = distance+1
+            #If Chances of finding the cell is greater than heuristic, Search the cell
+            if agent.belief[agent.x][agent.y] * (1-getRates(board[agent.x][agent.y].state)) > heuris:
+                searches = searches + 1
+                search = searchCell(board,agent.x,agent.y)
+                if search == True:
+                    return distance, searches, True
+                elif search == False:
+                    updateNetwork(agent,board,targetx,targety)
+                    #printBelief(agent.belief)
+        #If Chances of finding the cell is greater than heuristic, Search the cell
+        elif agent.y > targety:
+            agent.y = agent.y - 1
+            distance = distance+1
+            #If Chances of finding the cell is greater than heuristic, Search the cell
+            if agent.belief[agent.x][agent.y] * (1-getRates(board[agent.x][agent.y].state)) > heuris:
+                searches = searches + 1
+                search = searchCell(board,agent.x,agent.y)
+                if search == True:
+                    return distance, searches, True
+                elif search == False:
+                    updateNetwork(agent,board,targetx,targety)
+                    #printBelief(agent.belief)
+        elif agent.y < targety:
+            agent.y = agent.y + 1
+            distance = distance+1
+            #If Chances of finding the cell is greater than heuristic, Search the cell
+            if agent.belief[agent.x][agent.y] * (1-getRates(board[agent.x][agent.y].state)) > heuris:
+                searches = searches + 1
+                search = searchCell(board,agent.x,agent.y)
+                if search == True:
+                    return distance, searches, True
+                elif search == False:
+                    updateNetwork(agent,board,targetx,targety)
+                    #printBelief(agent.belief)
+    return distance, searches, False
+  
+#Set Heuristic for searching for a Cell along the way
+#Heurisitc is currently set to be higher than the 95th percentile
+def improvedHeuristic(board,agent):
+    tmpList = []
+    #print('test')
+    for row in board:
+        for cell in row:
+            tmpList.append(agent.belief[cell.x][cell.y] * (1-getRates(cell.state)))
+    percen = np.percentile(tmpList,95)
+    return percen
+    
 
 #Updates the Network of the agent,
 #Change the beliefs based on the last false
@@ -153,7 +263,6 @@ def updateNetwork(agent,board,targetx,targety):
             #Bayes P(A|B) = P(A)P(B|A)/P(B)
             # 
             #P(B) = P(A)P(B/A) + P(notA)P(B/notA)
-
 
             #Bayes Therom, A is target is in current Cell, B is failure in searched Cell?
             #Bayes P(A|B) = P(A)P(B|A)/P(B)
@@ -287,7 +396,8 @@ def travel(board,agent,targetx,targety):
             distance = distance+1
     return distance
     print('over')
-    
+
+#Get Data for Basic Agent 1
 def getData(x):
     for i in range(x):
         searches = 0
@@ -302,7 +412,7 @@ def getData(x):
         print(totalDistance)
         print(searches)
 
-
+#Get Data for Basic Agent 2
 def getData2(x):
     for i in range(x):
         searches = 0
@@ -316,13 +426,28 @@ def getData2(x):
             searches = searches + 1
         print(totalDistance)
         print(searches)
+#Get Data for Improved Agent
+def getData3(x):
+    for i in range(x):
+        totalDistance = 0
+        totalSearches = 0
+        tmp = generateBoard(50)
+        bob, tmp = startAgent(tmp)
+        res = False
+        while res == False:
+            res, dist , searches = improvedAgent(tmp,bob)
+            totalDistance = totalDistance + dist
+            totalSearches = totalSearches + searches
+        print(totalDistance)
+        print(totalSearches)
+        print('sep')
 
 
 
-
-getData(1)
-print('sep')
-getData2(1)
+#getData(1)
+#print('sep')
+#getData2(1)
+getData3(5)
 
 
 

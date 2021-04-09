@@ -85,8 +85,8 @@ def gamestart():
                     print('clicked')
                 if 525 <= mouse[0] <= 525+140 and 270 <= mouse[1] <= 270+40:
                     #minesweepai.improvedAIGlobal(tmpboard,90)
-                    minesweepai.improvedAIBetter(tmpboard)
-                    flagMine, rip = checkWin(tmpboard,dimen)
+                    result = searchdestroyai.improvedAgent(tmpboard,bob)
+                    print(result)
                     print('clicked')
 
         screen.fill(BLACK)
