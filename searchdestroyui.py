@@ -29,7 +29,7 @@ pygame.display.set_caption('Search And Destroy!')
 
 
 #Set dimensions for the board and create board 
-dimen = 5
+dimen = 50
 
 WIDTH = int((480-(dimen*MARGIN))/dimen)
 HEIGHT = int((480-(dimen*MARGIN))/dimen)
@@ -86,6 +86,11 @@ def gamestart():
                 if 525 <= mouse[0] <= 525+140 and 270 <= mouse[1] <= 270+40:
                     #minesweepai.improvedAIGlobal(tmpboard,90)
                     result = searchdestroyai.improvedAgent(tmpboard,bob)
+                    print(result)
+                    print('clicked')
+                if 525 <= mouse[0] <= 525+140 and 320 <= mouse[1] <= 320+40:
+                    #minesweepai.improvedAIGlobal(tmpboard,90)
+                    result = searchdestroyai.improvedAgentmov(tmpboard,bob)
                     print(result)
                     print('clicked')
 
