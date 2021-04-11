@@ -891,7 +891,7 @@ def newTarget(board):
             board[tx][ty].man = 1
     return board
     
-getData3(10)
+#getData3(10)
 #print('sep')
 #getData2(1)
 #getData3(5)

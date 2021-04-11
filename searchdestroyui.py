@@ -29,7 +29,7 @@ pygame.display.set_caption('Search And Destroy!')
 
 
 #Set dimensions for the board and create board 
-dimen = 50
+dimen = 6
 
 WIDTH = int((480-(dimen*MARGIN))/dimen)
 HEIGHT = int((480-(dimen*MARGIN))/dimen)
@@ -46,8 +46,13 @@ def gamestart():
     text3 = font2.render("Basic AI 1",1,BLACK)
     text4 = font2.render("Basic AI 2",1,BLACK)
     text5 = font2.render("Improved AI",1,BLACK)
-    text6 = font2.render("Improved AI:",1,BLACK)
+    text6 = font2.render("Basic 1:",1,BLACK)
     text7 = font2.render("Moving Target",1,BLACK)
+
+    text8 = font2.render("Basic 2:",1,BLACK)
+    text9 = font2.render("Moving Target",1,BLACK)
+    text10 = font2.render("Improved AI:",1,BLACK)
+    text11 = font2.render("Moving Target",1,BLACK)
 
 
     agentAsset = pygame.image.load('assets/agent.png').convert_alpha()
@@ -84,11 +89,20 @@ def gamestart():
                     print(result)
                     print('clicked')
                 if 525 <= mouse[0] <= 525+140 and 270 <= mouse[1] <= 270+40:
-                    #minesweepai.improvedAIGlobal(tmpboard,90)
                     result = searchdestroyai.improvedAgent(tmpboard,bob)
                     print(result)
                     print('clicked')
                 if 525 <= mouse[0] <= 525+140 and 320 <= mouse[1] <= 320+40:
+                    #minesweepai.improvedAIGlobal(tmpboard,90)
+                    result = searchdestroyai.improvedAgentmov(tmpboard,bob)
+                    print(result)
+                    print('clicked')
+                if 525 <= mouse[0] <= 525+140 and 370 <= mouse[1] <= 370+40:
+                    #minesweepai.improvedAIGlobal(tmpboard,90)
+                    result = searchdestroyai.improvedAgentmov(tmpboard,bob)
+                    print(result)
+                    print('clicked')
+                if 525 <= mouse[0] <= 525+140 and 420 <= mouse[1] <= 420+40:
                     #minesweepai.improvedAIGlobal(tmpboard,90)
                     result = searchdestroyai.improvedAgentmov(tmpboard,bob)
                     print(result)
@@ -115,6 +129,8 @@ def gamestart():
         pygame.draw.rect(screen,(170,170,170),[525,270,140,40])
         pygame.draw.rect(screen,(170,170,170),[525,320,140,40])
         pygame.draw.rect(screen,(170,170,170),[525,370,140,40])
+        pygame.draw.rect(screen,(170,170,170),[525,420,140,40])
+
         #Add title
         screen.blit(text0,(495,5))
         #Add label to the buttons
@@ -125,6 +141,11 @@ def gamestart():
         screen.blit(text5, (530,280))
         screen.blit(text6, (530,317))
         screen.blit(text7, (530,335))
+
+        screen.blit(text8, (530,370))
+        screen.blit(text9, (530,388))
+        screen.blit(text10, (530,419))
+        screen.blit(text11, (530,438))
 
 
 
